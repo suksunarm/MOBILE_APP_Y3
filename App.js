@@ -9,7 +9,8 @@ import StateScreen from "./src/screens/StateScreen";
 import ModalScreen from "./src/screens/ModalScreen";
 import SwipeScreen from "./src/screens/SwipeScreen";
 import CardScreen from "./src/screens/CardScreen";
-
+import LoadUsers from "./src/screens/LoadUsers";
+import RegisForm from "./src/screens/RegisForm";
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,9 @@ const App = () => {
 
         <Stack.Screen name="Card" component={CardScreen} />
         
+        <Stack.Screen name="Load" component={LoadUsers}/>
+
+        <Stack.Screen name="Regis" component={RegisForm}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

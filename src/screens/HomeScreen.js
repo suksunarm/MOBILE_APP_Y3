@@ -7,9 +7,9 @@ import Card from "../components/Card";
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.ViewStyle}>
-      <Text style={styles.TextStyle}>This is HOme Screen</Text>
-      <Text style={styles.TextStyle}>1.เพิ่ม Component</Text>
+      <Text style={styles.TextStyle}>This is Home Screen</Text>
       <View style={styles.Button}>
+      
         <Button
           title="Warp to List Screen"
           onPress={() => navigation.navigate("List")}
@@ -25,6 +25,14 @@ const HomeScreen = ({ navigation }) => {
           onPress={() => navigation.navigate("Modal")}
         />
 
+        <Button
+          title="Go to Component Screen"
+          onPress={() => navigation.navigate("Component")}
+          color="green"
+        />
+
+        
+
         <CustomButton
           title="เรียก List Demo"
           onPress={() => navigation.navigate("List")}
@@ -36,10 +44,25 @@ const HomeScreen = ({ navigation }) => {
           onPress={() => navigation.navigate("Card")}
           backgroundColor="white"
         />
+
+        <CustomButton
+          title="เรียก State Screen"
+          onPress={() => navigation.navigate("State")}
+          backgroundColor="gray"
+        />
+
+        <CustomButton
+          title="ซ้อม useEffect"
+          onPress={() => navigation.navigate("Load")}
+          backgroundColor="blue"
+        />
+
+        <CustomButton
+          title="เรียก RegisForm"
+          onPress={() => navigation.navigate("Regis")}
+          backgroundColor="gold"
+        />
       </View>
-      
-      <Card title="Card title" content="Test call from Home Jaaa" />
-    
     </View>
   );
 };

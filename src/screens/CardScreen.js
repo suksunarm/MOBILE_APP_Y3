@@ -1,29 +1,73 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Alert,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Card from "../components/Card";
-import React, { useState } from "react";
-import { View, Text, StyleSheet ,FlatList , TouchableOpacity , TextInput} from "react-native";
 import CustomButton from "../components/CustomButton";
-import Icon from 'react-native-vector-icons/MaterialIcons'
+
+const STORAGE_KEY = "@card_data";
 
 const CardScreen = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [cards, setCards] = useState("");
+  const [image, setImage] = useState("");
+  const [heroes, setHeroes] = useState([]);
+  const [searchKey, setSearchKey] = useState("");
+  const [filteredHeroes, setFilteredHeroes] = useState([]);
 
-  const addCard = () => {
-    if(!title.trim() || !content.trim()){
-        alert('กรุณากรอกค่า Title และ Content')
-        return;
+  useEffect(() => {
+    loadCards();
+  }, []);
+
+  useEffect(() => {
+    setFilteredHeroes(
+      heroes.filter((hero) =>
+        hero.title.toLowerCase().includes(searchKey.toLowerCase())
+      )
+    );
+  }, [searchKey, heroes]);
+
+  const addCard = async () => {
+    if (!title.trim() || !content.trim() || !image.trim()) {
+      Alert.alert("ข้อผิดพลาด", "กรุณากรอก Title, Content และ Image");
+      return;
     }
 
-    const newCard = { id: Date.now().toString, title, content };
-    setCards((preCards) => [newCard, ...preCards]);
+    const newCard = { id: Date.now().toString(), title, content, image };
+    const updatedHeroes = [newCard, ...heroes];
+
+    setHeroes(updatedHeroes);
     setTitle("");
     setContent("");
+    setImage("");
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHeroes));
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const loadCards = async () => {
+    try {
+      const storedCards = await AsyncStorage.getItem(STORAGE_KEY);
+      if (storedCards) {
+        setHeroes(JSON.parse(storedCards));
+      }
+    } catch (error) {
+      console.error("Failed to load data", error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>ทดสอบสร้างการ์ดยูกิ</Text>
+      <Text style={styles.header}>Avengers</Text>
 
       <TextInput
         style={styles.input}
@@ -37,28 +81,33 @@ const CardScreen = () => {
         placeholder="กรอกเนื้อหาของคุณ"
         value={content}
         onChangeText={setContent}
-        multiline={true}
-        numberOfLines={5}
+        multiline
       />
 
-     
+      <TextInput
+        style={styles.input}
+        placeholder="กรอกลิงก์รูปภาพของคุณ"
+        value={image}
+        onChangeText={setImage}
+      />
 
-      <CustomButton
-        title="เพิ่มการ์ด"
-        backgroundColor="gold"
-        onPress={addCard}
+      <CustomButton title="เพิ่มการ์ด" backgroundColor="gold" onPress={addCard} />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Search by Name"
+        value={searchKey}
+        onChangeText={setSearchKey}
       />
 
       <FlatList
-        data={cards}
+        data={filteredHeroes}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          // <Card title={item} content={item.content} />;
-          return <Card title={item.title} content={item.content} />;
-        }}
+        renderItem={({ item }) => (
+          <Card image={item.image} title={item.title} content={item.content} />
+        )}
         contentContainerStyle={styles.cardList}
       />
-
     </View>
   );
 };
@@ -69,12 +118,10 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-
   header: {
     fontSize: 24,
     fontWeight: "bold",
   },
-
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -83,9 +130,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
-
   cardList: {
-    marginTop: 20
+    marginTop: 20,
   },
 });
 
